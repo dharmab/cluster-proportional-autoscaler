@@ -106,7 +106,7 @@ func TestControllerParser(t *testing.T) {
 			true,
 			&linearParams{},
 		},
-		// Wrong input for IncludeUnschedulableNodes.
+		// Wrong input for PreventSinglePointFailure.
 		{
 			`{
 		      "coresPerReplica": 2,
@@ -114,6 +114,18 @@ func TestControllerParser(t *testing.T) {
 		      "min": 1,
 		      "max": 100,
 		      "preventSinglePointFailure": invalid,
+		    }`,
+			true,
+			&linearParams{},
+		},
+		// Wrong input for IncludeUnschedulableNodes.
+		{
+			`{
+		      "coresPerReplica": 2,
+		      "nodesPerReplica": 1,
+		      "min": 1,
+		      "max": 100,
+		      "IncludeUnschedulableNodes": invalid,
 		    }`,
 			true,
 			&linearParams{},
