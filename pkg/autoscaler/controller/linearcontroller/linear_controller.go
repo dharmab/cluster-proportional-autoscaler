@@ -53,7 +53,7 @@ type linearParams struct {
 	Min                       int     `json:"min"`
 	Max                       int     `json:"max"`
 	PreventSinglePointFailure bool    `json:"preventSinglePointFailure"`
-	IncludeUnschedulableNodes bool    `json:"inccludeUnschedulableNodes"`
+	IncludeUnschedulableNodes bool    `json:"includeUnschedulableNodes"`
 }
 
 func (c *LinearController) SyncConfig(configMap *v1.ConfigMap) error {
