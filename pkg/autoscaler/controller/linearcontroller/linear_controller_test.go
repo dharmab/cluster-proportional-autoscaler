@@ -43,7 +43,8 @@ func TestControllerParser(t *testing.T) {
 		      "nodesPerReplica": 1,
 		      "min": 1,
 		      "max": 100,
-		      "preventSinglePointFailure": true
+		      "preventSinglePointFailure": true,
+			  "IncludeUnschedulableNodes": true
 		    }`,
 			false,
 			&linearParams{
@@ -52,6 +53,25 @@ func TestControllerParser(t *testing.T) {
 				Min:                       1,
 				Max:                       100,
 				PreventSinglePointFailure: true,
+				IncludeUnschedulableNodes: true,
+			},
+		},
+		// IncludeUnschedulableNodes must default to false for backwards compatibility.
+		{
+			`{
+		      "coresPerReplica": 2,
+		      "nodesPerReplica": 1,
+		      "min": 1,
+		      "max": 100,
+		    }`,
+			true,
+			&linearParams{
+				CoresPerReplica:           2,
+				NodesPerReplica:           1,
+				Min:                       1,
+				Max:                       100,
+				PreventSinglePointFailure: true,
+				IncludeUnschedulableNodes: false,
 			},
 		},
 		{ // Invalid JSON
@@ -70,7 +90,7 @@ func TestControllerParser(t *testing.T) {
 			&linearParams{},
 		},
 		{ // Invalid max that smaller tham min
-			`{ 
+			`{
 		      "nodesPerReplica": 1,
 		      "min": 100,
 		      "max": 50
@@ -79,14 +99,14 @@ func TestControllerParser(t *testing.T) {
 			&linearParams{},
 		},
 		{ // Both coresPerReplica and nodesPerReplica are unset
-			`{ 
+			`{
 		      "min": 1,
 		      "max": 100
 		    }`,
 			true,
 			&linearParams{},
 		},
-		// Wrong input for PreventSinglePointFailure.
+		// Wrong input for IncludeUnschedulableNodes.
 		{
 			`{
 		      "coresPerReplica": 2,
@@ -162,6 +182,7 @@ func TestScaleFromMultipleParams(t *testing.T) {
 		Min:                       1,
 		Max:                       100,
 		PreventSinglePointFailure: true,
+		IncludeUnschedulableNodes: false,
 	}
 
 	testCases := []struct {
@@ -187,7 +208,7 @@ func TestScaleFromMultipleParams(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		if replicas := testController.getExpectedReplicasFromParams(tc.numNodes, tc.numCores); tc.expReplicas != replicas {
+		if replicas := testController.getExpectedReplicasFromParams(tc.numNodes, tc.numCores, tc.numNodes, tc.numNodes); tc.expReplicas != replicas {
 			t.Errorf("Scaler Lookup failed Expected %d, Got %d", tc.expReplicas, replicas)
 		}
 	}
